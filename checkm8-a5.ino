@@ -1,6 +1,13 @@
+#include <FreeDefaultFonts.h>
+#include <FreeSevenSegNumFontPlusPlus.h>
+#include <MCUFRIEND_kbv.h>
+#include <TFT_PRINTGLUE.h>
+#include <UTFTGLUE.h>
+#include <TouchScreen.h>
 #include <Adafruit_FT6206.h>
 #include <Adafruit_ILI9341.h>
 #include <Adafruit_GFX.h>    // Библиотека графики
+
 #include "Usb.h"
 
 #define TFT_CLK 13
