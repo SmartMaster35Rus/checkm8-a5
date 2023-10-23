@@ -1,8 +1,8 @@
-#include <ILI9488.h> // Библиотека для дисплея ILI9488
+#include <Adafruit_FT6206.h>
+#include <Adafruit_ILI9341.h>
 #include <Adafruit_GFX.h>    // Библиотека графики
 #include "Usb.h"
 
-// Настройка пинов для дисплея
 #define TFT_CLK 13
 #define TFT_MISO 12
 #define TFT_MOSI 11
@@ -10,7 +10,17 @@
 #define TFT_DC 9
 #define TFT_RST 8
 
-ILI9488 tft = ILI9488(TFT_CS, TFT_DC, TFT_RST);
+#define CS_PIN  8
+#define TIRQ_PIN  2
+
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
+Adafruit_FT6206 ts = Adafruit_FT6206();
+
+// Координаты кнопки "Старт"
+int startX = 60;
+int startY = 100;
+int endX = 180;
+int endY = 150;
 
 #define A5_8942
 #include "constants.h"
@@ -43,13 +53,14 @@ uint8_t send_out(uint8_t * io_buf, uint8_t pktsize)
 }
 
 void setup() {
+  // Инициализация TFT и сенсорного экрана
   tft.begin();
-  tft.setRotation(3); // Установка ориентации дисплея
-  tft.fillScreen(ILI9488_BLACK); // Очистка дисплея
+  tft.setRotation(3);  // Возможно, вам придется настроить угол поворота экрана
+  ts.begin(40);
   Serial.begin(115200);
   tft.println("checkm8 started");
   tft.setCursor(0, 0); // Установка начальной позиции курсора
-  tft.setTextColor(ILI9488_WHITE); // Установка цвета текста
+  tft.setTextColor(ILI9341_WHITE); // Установка цвета текста
   tft.println("checkm8 started"); // Вывод информации на дисплей
   if(Usb.Init() == -1)
   {
@@ -57,6 +68,15 @@ void setup() {
     tft.println("usb init error"); // Вывод информации об ошибке на дисплей
   }
   delay(200);
+}
+
+void drawStartButton() {
+  tft.fillScreen(ILI9341_BLACK);
+  tft.drawRect(50, 200, 220, 80, ILI9341_WHITE);
+  tft.setCursor(80, 240);
+  tft.setTextSize(2);
+  tft.setTextColor(ILI9341_WHITE);
+  tft.println("Start");
 }
 
 void loop() {
