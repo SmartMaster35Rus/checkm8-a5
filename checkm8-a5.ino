@@ -9,6 +9,8 @@
 #include <MCUFRIEND_kbv.h>
 #include <UTFTGLUE.h>
 #include "Usb.h"
+#include <Arduino.h>
+
 #define YP A1  // must be an analog pin, use "An" notation!
 #define XM A2  // must be an analog pin, use "An" notation!
 #define YM 9   // can be a digital pin
@@ -269,6 +271,8 @@ void set_global_state()
   }
 }
 
+void(* resetFunc) (void) = 0; // Объявление функции сброса
+
 void heap_occupation()
 {
 
@@ -331,4 +335,7 @@ void heap_occupation()
     tft.println(" checkm8 exploit...100%! ");
     tft.println(" checkm8 done ");
     tft.println(" Please connect sliver.app ");
+    delay(15000);  // Приостановить выполнение на 15 секунд
+    resetFunc();  // Попытаться перезагрузить устройство
 }
+
