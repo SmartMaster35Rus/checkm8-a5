@@ -203,8 +203,7 @@ As in the previous case, if we use normal OS with default USB stack, we can't av
 
 ## Authors
 
-* [a1exdandy](https://github.com/a1exdandy)
-* [nyan_satan](https://github.com/NyanSatan)
+* [ya.saxil](https://github.com/yasaxil)
 
 ## License
 
