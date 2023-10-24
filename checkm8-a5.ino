@@ -15,6 +15,9 @@
 #define TS_MAXX 320
 #define TS_MINY 0
 #define TS_MAXY 480
+#define ILI9341_WHITE TFT_WHITE
+#define ILI9341_GREEN TFT_GREEN
+#define ILI9341_BLACK TFT_BLACK
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
@@ -53,6 +56,24 @@ uint8_t send_out(uint8_t * io_buf, uint8_t pktsize)
   Usb.regWr(rHIRQ, bmHXFRDNIRQ);
   uint8_t rcode = Usb.regRd(rHRSL) & 0x0f;
   return rcode;
+}
+
+#define PROGRESS_BAR_WIDTH 100 // Ширина прогресс-бара в пикселях
+#define PROGRESS_BAR_HEIGHT 10 // Высота прогресс-бара в пикселях
+#define PROGRESS_BAR_X 10 // Координата X начала прогресс-бара
+#define PROGRESS_BAR_Y (tft.height() - PROGRESS_BAR_HEIGHT - 10) // Координата Y начала прогресс-бара
+
+void drawProgressBar(int progress) {
+  int filledWidth = (progress * PROGRESS_BAR_WIDTH) / 100; // Вычислить ширину заполненной части прогресс-бара
+
+  // Нарисовать границу прогресс-бара
+  tft.drawRect(PROGRESS_BAR_X, PROGRESS_BAR_Y, PROGRESS_BAR_WIDTH, PROGRESS_BAR_HEIGHT, ILI9341_WHITE);
+
+  // Нарисовать заполненную часть прогресс-бара
+  tft.fillRect(PROGRESS_BAR_X + 1, PROGRESS_BAR_Y + 1, filledWidth, PROGRESS_BAR_HEIGHT - 2, ILI9341_GREEN);
+
+  // Нарисовать незаполненную часть прогресс-бара
+  tft.fillRect(PROGRESS_BAR_X + 1 + filledWidth, PROGRESS_BAR_Y + 1, PROGRESS_BAR_WIDTH - filledWidth - 1, PROGRESS_BAR_HEIGHT - 2, ILI9341_BLACK);
 }
 
 void setup() {
@@ -110,6 +131,9 @@ void setup() {
 
   delay(200);
 }
+
+// Определите переменную для отслеживания процента выполнения
+int progress = 0;
 
 void loop() {
   // Add your touchscreen check at the start of the loop() function
@@ -183,27 +207,38 @@ void loop() {
         }
         checkm8_state = CHECKM8_HEAP_FENG_SHUI;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
+        progress = 20;
+        drawProgressBar(progress); // Отобразить прогресс-бар 20%
         break;
       case CHECKM8_HEAP_FENG_SHUI:
         heap_feng_shui();
         checkm8_state = CHECKM8_SET_GLOBAL_STATE;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
+        progress = 40;
+        drawProgressBar(progress); // Отобразить прогресс-бар 40%
         break;
       case CHECKM8_SET_GLOBAL_STATE:
         set_global_state();
         checkm8_state = CHECKM8_HEAP_OCCUPATION;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
+        progress = 60;
+        drawProgressBar(progress); // Отобразить прогресс-бар 60%
         break;
       case CHECKM8_HEAP_OCCUPATION:
         heap_occupation();
         checkm8_state = CHECKM8_END;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
+        progress = 80;
+        drawProgressBar(progress); // Отобразить прогресс-бар 80%
         break;
       case CHECKM8_END:
         digitalWrite(6, HIGH);
         tft.println("Done!");
         checkm8_state = -1;
+        progress = 100;
+        drawProgressBar(progress); // Отобразить прогресс-бар 100%
         break;
+        
     }
   }
 }
