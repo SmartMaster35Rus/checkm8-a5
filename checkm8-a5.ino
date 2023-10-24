@@ -11,6 +11,10 @@
 #define XM A2  // must be an analog pin, use "An" notation!
 #define YM 9   // can be a digital pin
 #define XP 8   // can be a digital pin
+#define TS_MINX 0
+#define TS_MAXX 320
+#define TS_MINY 0
+#define TS_MAXY 480
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
@@ -108,11 +112,40 @@ void setup() {
 }
 
 void loop() {
+  // Add your touchscreen check at the start of the loop() function
+  TSPoint p = ts.getPoint();
+  if (p.z > ts.pressureThreshhold) {
+    p.x = map(p.x, TS_MINX, TS_MAXX, tft.width(), 0);
+    p.y = map(p.y, TS_MINY, TS_MAXY, tft.height(), 0);
+
+    if (startButton.contains(p.x, p.y)) {
+      startButton.press(true);  // устанавливаем кнопку как нажатую
+    } else {
+      startButton.press(false);  // устанавливаем кнопку как не нажатую
+    }
+  } else {
+    startButton.press(false);  // устанавливаем кнопку как не нажатую
+  }
+
+  if (startButton.justPressed()) {
+    startButton.drawButton(true);  // рисуем кнопку как нажатую
+    
+    // Start the checkm8 process if it's not already running
+    if(checkm8_state == -1) {
+      checkm8_state = CHECKM8_INIT_RESET;
+    }
+  }
+
+  if (startButton.justReleased()) {
+    startButton.drawButton();  // рисуем кнопку как не нажатую
+  }
+
+  // The rest of your loop() function follows...
   Usb.Task();
   state = Usb.getUsbTaskState();
+
   if (state != last_state)
   {
-    //Serial.print("usb state: "); tft.println(state, HEX);
     last_state = state;
   }
   if (state == USB_STATE_ERROR)
@@ -160,7 +193,6 @@ void loop() {
         set_global_state();
         checkm8_state = CHECKM8_HEAP_OCCUPATION;
         Usb.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE);
-        //while(Usb.getUsbTaskState() != USB_DETACHED_SUBSTATE_WAIT_FOR_DEVICE) { Usb.Task(); }
         break;
       case CHECKM8_HEAP_OCCUPATION:
         heap_occupation();
@@ -172,7 +204,6 @@ void loop() {
         tft.println("Done!");
         checkm8_state = -1;
         break;
-
     }
   }
 }
