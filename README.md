@@ -42,7 +42,7 @@ git apply путь/к/usb_host_library.patch
 
 Перед использованием эксплоита измените эту строку в начале файла checkm8-a5.ino на целевой SoC CPID
 
-```c
+```
 #define A5_8940 / #define A5_8942 / #define A5_8945
 ```
 
