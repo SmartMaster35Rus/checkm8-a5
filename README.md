@@ -1,84 +1,83 @@
 ## A5/A5X checkm8
 
-Arduino UNO + USB HOST SHIELD 2.0 + TFT Display ILI9488 320/480
+Arduino UNO + USB HOST SHIELD 2.0 + TFT дисплей ILI9488 320/480
 
 ## Материалы и инструменты
 
-Arduino Uno
-USB Host Shield
-USB кабель типа A-B для подключения Arduino к компьютеру
-TFT дисплей на базе чипа ILI9488
-Провода соединения (если необходимо)
-Сборка
-Вставьте USB Host Shield на Arduino Uno. Убедитесь, что все контакты соответствуют друг другу.
+- Arduino Uno
+- USB Host Shield
+- USB кабель типа A-B для подключения Arduino к компьютеру
+- TFT дисплей на базе чипа ILI9488
+- Провода соединения (по необходимости)
 
-Подключите TFT дисплей к Arduino Uno. Может потребоваться использование проводов для подключения дисплея к соответствующим выводам на Arduino Uno. Схема подключения может варьироваться в зависимости от модели дисплея и его интерфейса (SPI, 8-битный параллельный и т.д.).
+## Сборка
+1. Вставьте USB Host Shield на Arduino Uno, удостоверьтесь, что все контакты соответствуют друг другу.
+2. Подключите TFT дисплей к Arduino Uno. Возможно, потребуется использование проводов для соединения дисплея с соответствующими выводами на Arduino Uno. Схема подключения может варьироваться в зависимости от модели дисплея и его интерфейса (SPI, 8-битный параллельный и т.д.).
 
 ## Программирование
-Установите Arduino IDE. Скачайте и установите последнюю версию Arduino IDE с официального сайта Arduino.
+1. Установите Arduino IDE. Скачайте и установите последнюю версию Arduino IDE с [официального сайта Arduino](https://www.arduino.cc/en/software).
+2. Установите необходимые библиотеки. В Arduino IDE перейдите в "Скетч" -> "Подключить библиотеку". Установите библиотеки для USB Host Shield и TFT дисплея ILI9488, например, "USB Host Shield Library 2.0" и "Adafruit ILI9488" или "MCUFRIEND_kbv" (в зависимости от вашего дисплея).
+3. Загрузите свой скетч на Arduino. Откройте ваш скетч в Arduino IDE, выберите "Инструменты" -> "Плата" -> "Arduino Uno", затем "Инструменты" -> "Порт" и выберите порт, к которому подключена ваша плата Arduino Uno. Нажмите кнопку "Загрузить" (стрелка вправо) для загрузки скетча на Arduino.
 
-Установите необходимые библиотеки. В Arduino IDE перейдите в "Скетч" -> "Подключить библиотеку". Здесь вам нужно установить библиотеки для USB Host Shield и TFT дисплея ILI9488. Названия библиотек могут варьироваться, но они могут выглядеть как "USB Host Shield Library 2.0" и "Adafruit ILI9488" или "MCUFRIEND_kbv" (в зависимости от вашего дисплея).
+## Проверка работы устройства
+Если все было сделано правильно, ваш TFT дисплей должен отображать информацию от USB Host Shield.
 
-Загрузите свой скетч на Arduino. Откройте ваш скетч в Arduino IDE, затем выберите "Инструменты" -> "Плата" -> "Arduino Uno", затем "Инструменты" -> "Порт" и выберите порт, к которому подключена ваша плата Arduino Uno. Нажмите кнопку "Загрузить" (стрелка вправо) для загрузки скетча на Arduino.
+[checkm8](https://github.com/axi0mX/ipwndfu/blob/master/checkm8.py) порт для S5L8940X/S5L8942X/S5L8945X на базе Arduino и USB Host Shield на базе MAX3421E
 
-Проверьте работу устройства. Если все было сделано правильно, ваш TFT дисплей должен показывать информацию от USB Host Shield.
+## Сборка
 
-[checkm8](https://github.com/axi0mX/ipwndfu/blob/master/checkm8.py) port for S5L8940X/S5L8942X/S5L8945X based on Arduino and MAX3421E-based USB Host Shield
+Следуйте инструкциям [здесь](https://github.com/DSecurity/checkm8-arduino#building). Обратите внимание, что патч для [USB Host Library Rev. 2.0](https://github.com/felis/USB_Host_Shield_2.0) отличается.
 
-## Building
+### Установка и патчинг USB Host Library Rev. 2.0
 
-Follow the instructions [here](https://github.com/DSecurity/checkm8-arduino#building). Note that the patch for [USB Host Library Rev. 2.0](https://github.com/felis/USB_Host_Shield_2.0) is different.
-
-### USB Host Library Rev. 2.0 installation and patching
-
-```
-cd path/to/Arduino/libraries
+```bash
+cd путь/к/библиотекам/Arduino
 git clone https://github.com/felis/USB_Host_Shield_2.0
 cd USB_Host_Shield_2.0
 git checkout cd87628af4a693eeafe1bf04486cf86ba01d29b8
-git apply path/to/usb_host_library.patch
+git apply путь/к/usb_host_library.patch
 ```
 
-### SoC selection
+### Выбор SoC
 
 Перед использованием эксплоита измените эту строку в начале файла checkm8-a5.ino на целевой SoC CPID
 
-```
+```c
 #define A5_8940 / #define A5_8942 / #define A5_8945
 ```
 
-## S5L8940X/S5L8942X/S5L8945X-specific exploitation notes
+## S5L8940X/S5L8942X/S5L8945X-специфические заметки по эксплуатации
 
-*[This article](https://habr.com/ru/company/dsec/blog/472762/) may be helpful for better understanding.*
+*[Эта статья](https://habr.com/ru/company/dsec/blog/472762/) может быть полезной для лучшего понимания.*
 
-### 1. `HOST2DEVICE` control request without data phase processing
+### 1. Обработка запроса управления `HOST2DEVICE` без обработки фазы данных
 
-In newer SoCs this request is processed as follows. Note that there are different cases for `request_handler_ret == 0` and `request_handler_ret > 0`:
+В более новых SoC этот запрос обрабатывается следующим образом. Обратите внимание, что существуют различные случаи для `request_handler_ret == 0` и `request_handler_ret > 0`:
 
 ```c
 void __fastcall usb_core_handle_usb_control_receive(void *ep0_rx_buffer, __int64 is_setup, __int64 data_rcvd, bool *data_phase)
 {
   ...
-  // get interface control request handler
+  // получение обработчика запроса управления интерфейсом
   request_handler = ep.registered_interfaces[(unsigned __int16)setup_request.wIndex]->request_handler;
   if ( !request_handler )
     goto error_handling;
-  // call to interface control request handler
-  // set global buffer pointer
+  // вызов обработчика запроса управления интерфейсом
+  // установка глобального указателя буфера
   request_handler_ret = request_handler(&g_setup_request, &ep0_data_phase_buffer);
   if ( !(g_setup_request.bmRequestType & 0x80000000) )
   {
     // HOST2DEVICE
     if ( request_handler_ret >= 1 )
     {
-      // set global data phase length and ifnum
+      // установка глобальной длины фазы данных и номера интерфейса
       ep0_data_phase_length = request_handler_ret; 
       ep0_data_phase_if_num = intf_num;
       goto continue;
     }
     if ( !request_handler_ret )
     {
-      // acknowledge transaction with zlp, do not touch global state
+      // подтверждение транзакции с zlp, не изменяя глобального состояния
       usb_core_send_zlp();
       goto continue;
     }
@@ -86,7 +85,7 @@ void __fastcall usb_core_handle_usb_control_receive(void *ep0_rx_buffer, __int64
 }
 ```
 
-But in our target SoCs this request is processed slightly different:
+Но в наших целевых SoC этот запрос обрабатывается немного иначе:
 
 ```c
 unsigned int __fastcall usb_core_handle_usb_control_receive(unsigned int rx_buffer, int is_setup, unsigned int data_received, int *data_phase)
@@ -98,18 +97,20 @@ unsigned int __fastcall usb_core_handle_usb_control_receive(unsigned int rx_buff
     if ( g_setup_packet.bmRequestType & 0x60 )
     {
       if ( (g_setup_packet.bmRequestType & 0x60) != 0x20
-        || (g_setup_packet.bmRequestType & 0x1F) != 1
+        || (g_setup_packet.bmRequestType & 0
+
+x1F) != 1
         || (v29 = LOBYTE(g_setup_packet.wIndex) | (HIBYTE(g_setup_packet.wIndex) << 8), v29 >= ep_size)
         || (request_handler = *(int (__fastcall **)(setup_req *, _DWORD *))(ep_array[LOBYTE(g_setup_packet.wIndex) | (HIBYTE(g_setup_packet.wIndex) << 8)]
                                                                           + 32)) == 0
         || (request_handler_ret = request_handler(&g_setup_packet, &ep0_data_phase_buffer), request_handler_ret < 0) )
       {
-        // error handling
+        // обработка ошибки
         rx_buffer = sub_2E7C(0x80, 1);
         v10 = 0;
         goto LABEL_103;
       }
-      // if request_handler_ret >= 0, then data phase length will be touched anyway
+      // если request_handler_ret >= 0, то длина фазы данных будет изменена в любом случае
       ep0_data_phase_length = request_handler_ret;
       ep0_data_phase_if_num = v29;
       *data_phase = 1;
@@ -119,21 +120,21 @@ unsigned int __fastcall usb_core_handle_usb_control_receive(unsigned int rx_buff
 }
 ```
 
-So, if we send any `HOST2DEVICE` control request without data phase, then `ep0_data_phase_length` will be reset to zero. Because of this we can't use `ctrlReq(0x21,4,0)` to reenter `DFU`. But there is another way to reenter `DFU`:
+Таким образом, если мы отправим любой запрос управления `HOST2DEVICE` без фазы данных, то `ep0_data_phase_length` будет сброшено на ноль. Из-за этого мы не можем использовать `ctrlReq(0x21,4,0)` для повторного входа в `DFU`. Но есть другой способ повторного входа в `DFU`:
 
-1. `ctrlReq(bmRequestType = 0x21,bRequest = 1,wLength = 0x40)` with any data
+1. `ctrlReq(bmRequestType = 0x21,bRequest = 1,wLength = 0x40)` с любыми данными
 2. `ctrlReq(0x21,1,0)`
 3. `ctrlReq(0xa1,3,1)`
 4. `ctrlReq(0xa1,3,1)`
-5. `USB` bus reset
+5. Сброс USB-шины
 
-So, to be able to write to the freed `io_buffer`, we do steps 1-4, then send an incomplete `HOST2DEVICE` control transaction to set global state, then trigger bus reset. This algorithm is fully described [here](https://gist.github.com/littlelailo/42c6a11d31877f98531f6d30444f59c4) by [littlelailo](https://github.com/littlelailo).
+Таким образом, чтобы иметь возможность записывать в освобожденный `io_buffer`, мы выполняем шаги 1-4, затем отправляем неполный контрольный запрос `HOST2DEVICE`, чтобы установить глобальное состояние, затем вызываем сброс шины. Этот алгоритм полностью описан [здесь](https://gist.github.com/littlelailo/42c6a11d31877f98531f6d30444f59c4) [littlelailo](https://github.com/littlelailo).
 
-But, if we use any normal OS with default USB stack for exploitation, then we can't avoid standard device requests (e.g. `SET_ADDRESS`, see [this](https://www.beyondlogic.org/usbnutshell/usb6.shtml) for more info) sent by OS before we can work with device. Because of it in our PoC we use `Arduino` and `MAX3421E` to control early initialization of USB.
+Однако, если мы используем нормальную ОС с USB-стеком по умолчанию для эксплуатации, то мы не можем избежать отправки стандартных запросов устройства (например, `SET_ADDRESS`, см. [здесь](https://www.beyondlogic.org/usbnutshell/usb6.shtml) для получения более подробной информации) системой до того, как мы сможем работать с устройством. Поэтому в нашем PoC мы используем `Arduino` и `MAX3421E` для управления ранней инициализацией USB.
 
-### 2. Zero length packet processing
+### 2. Обработка нулевого пакета
 
-In newer SoCs data packets are processed as follows. Note that in case of zero length packet processing is not performed.
+В более новых SoC пакеты данных обрабатываются следующим образом. Обратите внимание, что в случае обработки нулевого пакета обработка не выполняется.
 
 ```c
 void __fastcall usb_core_handle_usb_control_receive(void *ep0_rx_buffer, __int64 is_setup, __int64 data_rcvd, bool *data_phase)
@@ -141,7 +142,7 @@ void __fastcall usb_core_handle_usb_control_receive(void *ep0_rx_buffer, __int64
   ...
   if ( !(is_setup & 1) )
   {
-    if ( !(_DWORD)data_rcvd ) // check for zero length packet
+    if ( !(_DWORD)data_rcvd ) // проверка на нулевой пакет
       return;
     if ( ep0_data_phase_rcvd + (unsigned int)data_rcvd <= ep0_data_phase_length )
     {
@@ -149,28 +150,27 @@ void __fastcall usb_core_handle_usb_control_receive(void *ep0_rx_buffer, __int64
         to_copy = (unsigned int)data_rcvd;
       else
         to_copy = ep0_data_phase_length - ep0_data_phase_rcvd;
-      memmove(ep0_data_phase_buffer, ep0_rx_buffer, to_copy);// copy received data to IO-buffer
-      ep0_data_phase_buffer += (unsigned int)to_copy;// update global buffer pointer
-      ep0_data_phase_rcvd += to_copy;           // update received counter
+      memmove(ep0_data_phase_buffer, ep0_rx_buffer, to_copy);// копирование полученных данных в буфер IO
+      ep0_data_phase_buffer += (unsigned int)to_copy;// обновление глобального указателя буфера
+      ep0_data_phase_rcvd += to_copy;           // обновление счетчика полученных данных
       *data_phase = 1;
-      // stop transfer if received expected number of bytes
-      // or received less then 0x40 bytes packet
+      // остановить передачу, если получено ожидаемое количество байт
+      // или получен пакет менее 0x40 байт
       if ( (_DWORD)data_rcvd == 0x40 )
-        end_of_transfer = ep0_data_phase_rcvd == ep0_data_phase_length;
+		end_of_transfer = ep0_data_phase_rcvd == ep0_data_phase_length;
       else
         end_of_transfer = 1;
   ...
 }
 ```
 
-But in our target SoCs zero length packets are processed in the same way as non-zero length packets.
-
+Но в наших целевых SoC нулевые пакеты обрабатываются так же, как и пакеты ненулевой длины.
 
 ```c
 unsigned int __fastcall usb_core_handle_usb_control_receive(unsigned int rx_buffer, int is_setup, unsigned int data_received, int *data_phase)
 {
   ...
-  // data packet processing starts here
+  // обработка начинается здесь
   rx_buffer = ep0_data_phase_buffer;
   if ( !ep0_data_phase_buffer )
     return rx_buffer;
@@ -192,8 +192,8 @@ LABEL_103:
   else
     v7 = data_received;
   memmove(ep0_data_phase_buffer, rx_buffer_1, v7);
-  end_of_transfer = data_received_1 != 0x40;  // in case of zero length packet `end_of_transfer` will be `true`
-                                              // and global state will be reseted
+  end_of_transfer = data_received_1 != 0x40;  // в случае нулевого пакета `end_of_transfer` будет `true`
+                                              // и глобальное состояние будет сброшено
   ep0_data_phase_buffer += v7;
   ep0_data_phase_rcvd += v7;
   rx_buffer = ep0_data_phase_rcvd;
@@ -217,17 +217,18 @@ LABEL_103:
 }
 ```
 
-As in the previous case, if we use normal OS with default USB stack, we can't avoid sending of zero length packets in status phase of standard device USB controll requests.
+Как и в предыдущем случае, если мы используем нормальную ОС с USB-стеком по умолчанию, мы не можем избежать отправки нулевых пакетов в статусной фазе стандартных управляющих запросов USB устройства.
 
-## Important notes
+## Важные замечания
 
-* Do not use any cables with embedded USB hubs (DCSD/Kong/Kanzi/etc.), as it might prevent a device from being recognized by the program. Normal USB-cables will do the trick just fine
-* This exploit demotes your device by default, so SWD-debugging will be available. But that also makes your device use development KBAG when decrypting Image3s. Keep that in mind if you're going to use this to decrypt firmware components
+* Не используйте кабели с встроенными USB-хабами (DCSD/Kong/Kanzi и т.д.), так как это может предотвратить распознавание устройства программой. Обычные USB-кабели подойдут нормально.
+* Этот эксплойт по умолчанию понижает уровень вашего устройства, поэтому SWD-отладка будет доступна. Но это также заставляет ваше устройство использовать KBAG разработки при расшифровке Image3. Имейте в виду, если вы собираетесь использовать это для расшифровки компонентов прошивки.
 
-## Authors
+## Авторы
 
 * [ya.saxil](https://github.com/yasaxil)
 
-## License
+## Лицензия
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+Этот проект лицензирован по лицензии MIT - см. файл [LICENSE](LICENSE) для получения подробной информации.
+```
