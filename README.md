@@ -41,10 +41,10 @@ git apply path/to/usb_host_library.patch
 
 ### SoC selection
 
-Before using the exploit change this line in the beginning of `checkm8-a5.ino` with target SoC CPID:
+Перед использованием эксплоита измените эту строку в начале файла checkm8-a5.ino на целевой SoC CPID
 
 ```
-#define A5_8942
+#define A5_8940 / #define A5_8942 / #define A5_8945
 ```
 
 ## S5L8940X/S5L8942X/S5L8945X-specific exploitation notes
